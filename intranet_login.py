@@ -1,14 +1,19 @@
 #!/usr/bin/python3
 
 import requests
+import os
+from dotenv import load_dotenv
 import sys
 import json
 from bs4 import BeautifulSoup
 
 url = "https://intranet.alxswe.com/auth/sign_in"
 
-email = sys.argv[1]
-password = sys.argv[2]
+# Load environment variables
+load_dotenv()
+email = os.getenv('USER_EMAIL')
+password = os.getenv('USER_PASSWORD')
+
 
 def fetch_projects():
     with requests.Session() as session:
@@ -153,8 +158,8 @@ def fetch_projects():
                 'deadline_date': deadline_date,
                 'deadline_time': deadline_time
                 }
-            projects['Active Projects'] = len(projects)
-            
+            projects['Active Projects'] = len(all_projects)
+
         else:
             projects['Active Projects'] = 0
 
@@ -164,7 +169,7 @@ def fetch_projects():
 
 def main():
     projects = fetch_projects()
-    print(projects)
+    return projects
 
 
 if __name__ == "__main__":
