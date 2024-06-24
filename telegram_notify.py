@@ -14,23 +14,23 @@ def send_notification(projects):
     # Construct message
     if projects is not None:
         if projects.get('Active Projects') > 1:
-            message = f"**There are {projects['Active Projects']} active projects in the intranet.**\n\n"
+            message = f"❕*You Have {projects['Active Projects']} Active Projects On The Intranet.*\n\n"
         if projects.get('Active Projects') == 1:
-            message = f"**There is {projects['Active Projects']} active project in the intranet.**\n\n"
+            message = f"❕*You Have {projects['Active Projects']} Active Project On The Intranet.*\n\n"
         else:
-            message = f"**There are no active projects in the intranet.**\n\n"
+            message = f"❕*There Are No Active Projects On The Intranet.*\n\n"
         # Add project details to message
         for project in projects:
             count = 1
             if project == f'task-{count}':
-                message += f"- **Project Name:**\n {projects[project]['name']}\n"
-                message += f"- **Start Date:** {projects[project]['start_date']} {projects[project]['start_time']}\n"
-                message += f"- **Deadline Date:** {projects[project]['deadline_date']} {projects[project]['deadline_time']}\n"
-                message += f"- **Progress:** {projects[project]['progress']}\n\n"
-                message += f"View Project on the [intranet]({projects[project]['link']})\n"
+                message += f"📌 *Project Name:* {projects[project]['name']}\n\n"
+                message += f" 📆 *Start Date:* {projects[project]['start_date']} at {projects[project]['start_time']}\n"
+                message += f"⏰ *Deadline:* {projects[project]['deadline_date']} by {projects[project]['deadline_time']}\n"
+                message += f"📊 *Progress:* {projects[project]['progress']}\n"
+                message += f"🔗 [View project on the Intranet]({projects[project]['link']})\n\n"
                 count += 1
         url = f"https://api.telegram.org/bot{telegram_token}/sendMessage"
-        data = {"chat_id": chat_id, "text": message}
+        data = {"chat_id": chat_id, "text": message, "parse_mode": "Markdown"}
         headers = {"Content-Type": "application/json", "cache-control": "no-cache"}
 
         try:
