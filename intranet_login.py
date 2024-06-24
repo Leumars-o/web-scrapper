@@ -2,6 +2,7 @@
 
 import requests
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 import sys
 import json
@@ -115,8 +116,9 @@ def fetch_projects():
                         try:
                             #Parse JSON string to extract start date if JSON is valid
                             start_date_data = json.loads(start_date_json)
-                            start_date = start_date_data.get('value')
-                            start_date, start_time = start_date.split('T')
+                            date_string = start_date_data.get('value')
+                            date_string, start_time = date_string.split('T')
+                            start_date = datetime.strptime(date_string, '%Y-%m-%d').strftime('%B %d, %Y')
                             start_time = start_time[:5]
 
                         except json.JSONDecodeError:
@@ -135,8 +137,9 @@ def fetch_projects():
                     try:
                         #Parse JSON string if JSON is valid
                         deadline_data = json.loads(deadline_json)
-                        deadline_date = deadline_data.get('value')
-                        deadline_date, deadline_time = deadline_date.split('T')
+                        deadline_string = deadline_data.get('value')
+                        deadline_string, deadline_time = deadline_string.split('T')
+                        deadline_date = datetime.strptime(deadline_string, '%Y-%m-%d').strftime('%B %d, %Y')
                         deadline_time = deadline_time[:5]
 
                     except json.JSONDecodeError:
