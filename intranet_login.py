@@ -66,22 +66,37 @@ def fetch_projects():
             "commit": "Log+in"
         }
 
-        # Send login request with payload and headers
-        response = session.post(url, headers=headers, data=payload)
-
-        # Handle the response here
-        soup = BeautifulSoup(response.text, 'html.parser')
-
         # Dictionary of projects
         projects = {}
 
-        # Get Monthly Average
+        # Send login request with payload and headers
+        response = session.post(url, headers=headers, data=payload)
+        current_url = response.url
+        
+        # Check if login was successful
+        if current_url == "https://intranet.alxswe.com/dashboard":
+            print("Login successful.")
+        elif current_url == "https://intranet.alxswe.com/auth/sign_in":
+            print("Login failed.")
+            exit()
+        else:
+            tokens = current_url.split('/')
+            if "evaluation_quizzes" in tokens:
+                projects['evaluation_quiz'] = tokens[-1]
+        
+        # Handle the response here
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+
+        # Get All Months Average
         monthly_average = soup.find('tbody')
         if monthly_average:
+            # Get Average for Current Month
             month_average = monthly_average.find_all('td', class_='text-right')
             month_average = month_average[-1].text.strip()
-
-        projects['Month\'s Average'] = month_average
+            projects['Month Average'] = month_average
+        else:
+            projects['Month Average'] = 0
 
         # Get Active projects
         list_group = soup.find('ul', class_='list-group')
