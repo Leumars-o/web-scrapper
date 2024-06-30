@@ -1,10 +1,9 @@
-""" This program is responsible for generating the questions and answers for the quiz.
+""" This module is responsible for generating the questions and answers for the quiz.
 
     Returns:
         _type_: dict
 """
 import os
-import sys
 import json
 import random
 import google.generativeai as genai
@@ -24,6 +23,7 @@ structure = '{\
 "correct_option_id" : \
 }'
 
+# Languages to generate questions for
 languages = [
   "python",
   "javascript",
@@ -38,7 +38,7 @@ prompts = [
   "Give me an inspirational quote for a programmer"
 ]
 
-# Model Configuration
+# AI Model Configuration
 generation_config = {
   "temperature": 1,
   "top_p": 0.95,
@@ -47,7 +47,7 @@ generation_config = {
   "response_mime_type": "text/plain",
 }
 
-# Create the model
+# Create the AI model
 model = genai.GenerativeModel(
   model_name="gemini-1.5-pro",
   generation_config=generation_config,
@@ -59,8 +59,19 @@ model = genai.GenerativeModel(
 chat_session = model.start_chat(
   history=[]
 )
+
 # Prompt the model
 def prompt_model(prompts, prompt_index):
+  """ This function is responsible for prompting the AI model
+  
+    Args:
+        prompts (_type_): list
+        prompt_index (_type_): int
+
+    Returns:
+        _type_: dict
+                The response from the AI model
+    """
   # Send the prompt to the model
   response = chat_session.send_message(prompts[prompt_index])
   # Clean up the response
@@ -73,3 +84,4 @@ def prompt_model(prompts, prompt_index):
     return (response_clean)
   else:
     return (response_data)
+  
