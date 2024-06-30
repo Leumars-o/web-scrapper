@@ -1,13 +1,18 @@
-#!/usr/bin/python3
+""" This module is responsible for extracting relevant data from the user's intranet
 
+    Returns:
+        _type_: dict
+                The relevant data from the intranet module
+"""
 import requests
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-import sys
 import json
 from bs4 import BeautifulSoup
 
+
+# set base url
 url = "https://intranet.alxswe.com/auth/sign_in"
 
 # Load environment variables
@@ -17,14 +22,21 @@ password = os.getenv('USER_PASSWORD')
 
 
 def fetch_projects():
+    """ This function is responsible for extracting relevant data from the user's intranet
+
+    Returns:
+        _type_: dict
+                The relevant data from the intranet module
+    """
+
+    # Create session with cookies and user-agent
     with requests.Session() as session:
         # Get initial page to potentially capture CSRF token and cookies
         page = session.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
 
-        # Extract CSRF token (replace with appropriate selector based on website)
+        # Extract CSRF token
         csrf_token = soup.find('input', {'name': 'authenticity_token'})['value']
-        
         if not csrf_token:
             print("Couldn't find CSRF token element.")
             exit()
@@ -33,7 +45,6 @@ def fetch_projects():
         if not cookie:
             print("No session cookies found.")
             exit()
-        
 
         # Prepare headers with cookies and user-agent
         headers = {
@@ -66,7 +77,7 @@ def fetch_projects():
             "commit": "Log+in"
         }
 
-        # Dictionary of projects
+        # Create dictionary of projects
         projects = {}
 
         # Send login request with payload and headers
@@ -133,7 +144,7 @@ def fetch_projects():
                             start_date_data = json.loads(start_date_json)
                             date_string = start_date_data.get('value')
                             date_string, start_time = date_string.split('T')
-                            start_date = datetime.strptime(date_string, '%Y-%m-%d').strftime('%B %d, %Y')
+                            start_date = datetime.strptime(date_string, '%Y-%m-%d').strftime('%A %B %d, %Y')
                             start_time = start_time[:5]
 
                         except json.JSONDecodeError:
@@ -143,24 +154,21 @@ def fetch_projects():
                 deadline_element = active_project.find_all('div', class_="d-inline-block", attrs= {'data-react-class': 'common/DateTime'})
 
                 if len(deadline_element) > 1:
-                    deadline_element = deadline_element[1]
-                    deadline_json = deadline_element.get('data-react-props') if deadline_element else None
-                    deadline_date = None
-                    deadline_time = None
-                
-                if deadline_json:
+                    deadline = deadline_element[1]
+                    deadline_json = deadline.get('data-react-props') if deadline else None
                     try:
                         #Parse JSON string if JSON is valid
                         deadline_data = json.loads(deadline_json)
                         deadline_string = deadline_data.get('value')
                         deadline_string, deadline_time = deadline_string.split('T')
-                        deadline_date = datetime.strptime(deadline_string, '%Y-%m-%d').strftime('%B %d, %Y')
+                        deadline_date = datetime.strptime(deadline_string, '%Y-%m-%d').strftime('%A %B %d, %Y')
                         deadline_time = deadline_time[:5]
 
                     except json.JSONDecodeError:
                         print(f"Error parsing JSON for the deadline in project: {project_name}")
                 else:
-                    deadline_date = None
+                    deadline_date = "Not Available"
+                    deadline_time = None
                         
                 # Create project dictionary entry with extracted information
                 task_name = f"task-{len(projects)}"
@@ -177,7 +185,7 @@ def fetch_projects():
                 'deadline_time': deadline_time
                 }
             projects['Active Projects'] = len(all_projects)
-
+        
         else:
             projects['Active Projects'] = 0
 
