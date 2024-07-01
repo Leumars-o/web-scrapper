@@ -72,8 +72,8 @@ random_number = random.randint(0, 2)
 functions = [execute_quiz, execute_fact, execute_quote]
 
 # Create triggers for the scheduler
-trigger_projects = CronTrigger(hour = '16', minute = '*', second = '0')
-trigger_ai = CronTrigger(hour = '16', minute = '*', second = '1')
+trigger_projects = CronTrigger(hour = '6', minute = '30', second = '0')
+trigger_ai = CronTrigger(hour = '6', minute = '30', second = '1')
 
 # Create the scheduler
 scheduler = BlockingScheduler()
